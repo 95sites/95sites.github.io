@@ -1,0 +1,157 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+<script src="js/three.min.js"></script>
+<script src="js/ColladaLoader.js"></script>
+
+<script src="js/OrbitControls.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+<style>
+body { margin: 0;
+	font: 13px/19px 'Roboto', sans-serif;
+
+}
+h2{
+font-weight: 700;
+color: gray;
+
+}
+#canvaswrapper{
+	position: relative;
+	left:-40px;
+	width:160%;
+	height:0;
+	padding:90% 0 0 0;
+	margin: 20px auto;
+}
+canvas{
+	position: absolute;
+	left:0; top:0;
+	width:100%; height:100%;
+border:0;
+}
+article{
+	position: relative;
+	width:30%;
+	margin:20px auto 0 auto;
+	left:-40px;
+}
+</style>
+</head>
+<body>
+	<article id="column">
+		<h2>Pretend title of pretend article</h2>
+High resolution 3D scans of more than 25 historical sites from around the world are being released.
+
+CyArk used cutting edge digital archaeology techniques including laser scanning and drones to capture the images which have been released by the Google Arts and Culture project.
+
+The project coincides with World Heritage Day on Wednesday 18 April 2018.
+<div id="canvaswrapper">
+	<canvas id="threejs"></canvas>
+</div>
+	An archaeological site thought to be 4,000 years old has been fully unearthed by work to extend an industrial estate.
+
+Builders have uncovered the henge, which is 100m (330ft) in diameter, at Warth Park in Raunds, Northamptonshire.
+
+An aerial photo showing the scale of the Neolithic monument first emerged on Twitter on Tuesday, but was deleted.
+
+However, archaeologists say that site, known as Cotton Henge, has previously been investigated twice before.
+
+Oxford Archaeology East, working on behalf of developer Roxhill, said the henge was first identified by aerial photography in the 1970s.
+
+They added that it was likely to date from the late Neolithic period (circa 3000BC -2500BC) and forms part of a larger group of ceremonial landscape features located and excavated as part of the Raunds Area Project.
+</article>
+<script>
+
+var scene = new THREE.Scene();
+scene.background = new THREE.Color( 0xeeeeee );
+
+var camera = new THREE.PerspectiveCamera( 45, 16/9, 0.1, 30000 );
+camera.position.set( 0,4,8 );
+
+var cubeCamera = new THREE.CubeCamera( 1, 100000, 128 );
+scene.add(cubeCamera);
+
+var size = 10;
+var divisions = 10;
+
+var gridHelper = new THREE.GridHelper( size, divisions );
+scene.add( gridHelper );
+
+scene.add( new THREE.AxesHelper( 3 ) );
+/*
+var geometry1 = new THREE.BoxGeometry(2,2,2);
+var material = new THREE.MeshLambertMaterial({ color: 0x33ff33 });
+var cube = new THREE.Mesh( geometry1, material );
+cube.position.set( 0,1,0 );
+scene.add(cube);
+*/
+hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
+				hemiLight.color.setHSL( 0.6, 1, 0.6 );
+				hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+				hemiLight.position.set( 0, 50, 0 );
+				scene.add( hemiLight );
+
+var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('threejs'), antialias: true });
+
+renderer.setPixelRatio( window.devicePixelRatio );
+
+controls = new THREE.OrbitControls(camera );
+
+
+var loader = new THREE.ColladaLoader();
+loader.load('models/bench.dae', function (result) {
+
+	scene.add(result.scene);
+
+});
+
+
+
+function resizeCanvasToDisplaySize(force) {
+  const canvas = renderer.domElement;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  if (force || canvas.width !== width ||canvas.height !== height) {
+    // you must pass false here or three.js sadly fights the browser
+    renderer.setSize(width, height, false);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+
+    // set render target sizes here
+  }
+}
+
+
+/*
+var t = ( Date.now() / 2000 );
+					// move light in circle around center
+					// change light height with sine curve
+					var r = 5.0;
+					var lx = r * Math.cos( t );
+					var lz = r * Math.sin( t );
+					//var ly = 5.0 + 5.0 * Math.sin( t / 3.0 );
+					camera.position.set( lx, 2, lz );
+*/
+
+
+
+function animate() {
+	requestAnimationFrame( animate );
+	//cube.rotation.y += .01;
+	resizeCanvasToDisplaySize()
+	renderer.render( scene, camera );
+
+
+
+						camera.lookAt(0,0,0);
+
+}
+animate();
+
+
+</script>
+</body>
+</html>
