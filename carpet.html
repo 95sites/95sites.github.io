@@ -22,7 +22,7 @@ var cubeCamera = new THREE.CubeCamera( 1, 100000, 128 );
 scene.add(cubeCamera);
 
 
-var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('threejs')});
+var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('threejs'), antialias: true });
 
 renderer.setClearColor(0x00ff00);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -32,7 +32,7 @@ var geometry = new THREE.SphereBufferGeometry( 500, 60, 40 );
 				geometry.scale( - 1, 1, 1 );
 
 				var material = new THREE.MeshBasicMaterial( {
-					map: new THREE.TextureLoader().load( 'textures/009_Half.jpg' )
+					map: new THREE.TextureLoader().load( 'textures/pano4000.jpg' )
 				} );
 
 				mesh = new THREE.Mesh( geometry, material );
@@ -75,6 +75,7 @@ loader = new THREE.JSONLoader();
 
 
 
+camera.rotation.y = 0.8;
 
 camera.position.set(0,0,8);
 
