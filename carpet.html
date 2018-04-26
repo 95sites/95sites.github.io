@@ -22,7 +22,7 @@ var cubeCamera = new THREE.CubeCamera( 1, 100000, 128 );
 scene.add(cubeCamera);
 
 
-var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('threejs')});
+var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('threejs'), antialias: true });
 
 renderer.setClearColor(0x00ff00);
 renderer.setSize(window.innerWidth, window.innerHeight);
