@@ -1,0 +1,163 @@
+<html>
+<head>
+<script src="js/three.min.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/Water.js"></script>
+<script src="js/Sky.js"></script>
+
+
+<style>
+body { margin: 0; }
+canvas{ color: red; }
+</style>
+</head>
+<body>
+	<canvas id="threejs"></canvas>
+
+<script>
+
+scene = new THREE.Scene();
+scene.background = new THREE.CubeTextureLoader()
+.setPath( 'textures/skyboxsun25deg/' )
+.load( [
+	'px.jpg',
+	'nx.jpg',
+	'py.jpg',
+	'ny.jpg',
+	'pz.jpg',
+	'nz.jpg'
+] );
+
+
+var camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 0.1, 30000 );
+camera.position.set( 140, 30, 150 );
+var cubeCamera = new THREE.CubeCamera( 1, 100000, 128 );
+cubeCamera.position.set( 0, 5, 0 );
+
+scene.add(cubeCamera);
+
+
+var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('threejs')});
+
+renderer.setClearColor(0x00ff00);
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+light = new THREE.DirectionalLight( 0xffffff, 0.7 );
+scene.add( light );
+// Water
+
+var waterGeometry = new THREE.PlaneBufferGeometry( 10000, 10000 );
+
+water = new THREE.Water(
+	waterGeometry,
+	{
+		textureWidth: 512,
+		textureHeight: 512,
+		waterNormals: new THREE.TextureLoader().load( 'textures/waternormals.jpg', function ( texture ) {
+			texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+		}),
+		alpha: 1.0,
+		sunDirection: light.position.clone().normalize(),
+		sunColor: 0xffffff,
+		waterColor: 0x001e0f,
+		distortionScale:  3.7,
+		fog: scene.fog !== undefined
+	}
+);
+
+water.rotation.x = - Math.PI / 2;
+
+scene.add( water );
+
+
+var texturepattern = new THREE.TextureLoader().load( "textures/volumepattern.jpg" );
+
+
+loader = new THREE.JSONLoader();
+	loader.load( "models/volymbehallare2.json", function( geometry ) {
+        meshvolume = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({
+					color: 0xffcc00,
+					envMap: cubeCamera.renderTarget,
+					combine: THREE.MixOperation, reflectivity: 0.2,
+					side: THREE.DoubleSide,
+					alphaMap: texturepattern,
+					transparent: true,
+
+
+				}) );
+				meshvolume.scale.set(10,10,10);
+				meshvolume.position.set(0,-5,0);
+				scene.add( meshvolume );
+	});
+
+	loader.load( "models/volymbehallare_gold.json", function( geometry ) {
+				meshgold = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial({
+					color: 0xCA981E,
+roughness: 1,
+	envMap: cubeCamera.renderTarget,
+					side: THREE.DoubleSide
+
+										}) );
+				scene.add( meshgold );
+				meshgold.scale.set(10,10,10);
+				meshgold.position.set(0,-5,0);
+
+	});
+
+
+//mountainrange
+var geometry = new THREE.PlaneGeometry( 4710,385 );
+
+var material = new THREE.MeshBasicMaterial( {
+
+					transparent: true,
+					map: new THREE.TextureLoader().load( 'textures/mountainrange.png'),
+					side: THREE.DoubleSide
+				} );
+
+				plane = new THREE.Mesh( geometry, material );
+				scene.add( plane );
+
+			plane.position.set(0, 190, 3000);
+
+
+
+
+
+	light2 = new THREE.AmbientLight(0xffffff, .5 );
+
+
+
+
+	  scene.add(light2);
+
+
+
+		controls = new THREE.OrbitControls( camera, renderer.domElement );
+		controls.maxPolarAngle = Math.PI * 0.495;
+		controls.target.set( 0, 10, 0 );
+		controls.minDistance = 40.0;
+		controls.maxDistance = 200.0;
+		camera.lookAt( controls.target );
+
+
+
+function animate() {
+	requestAnimationFrame( animate );
+
+	var time = performance.now() * 0.001;
+
+
+
+	water.material.uniforms.time.value += 1.0 / 60.0;
+
+	renderer.render( scene, camera );
+	cubeCamera.updateCubeMap(renderer, scene);
+
+}
+animate();
+
+
+</script>
+</body>
+</html>
