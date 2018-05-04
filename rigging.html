@@ -1,0 +1,153 @@
+<html>
+<head>
+<script src="js/three.min.js"></script>
+
+
+
+<style>
+body { margin: 0; }
+canvas{ color: red; }
+</style>
+</head>
+<body>
+	<canvas id="threejs"></canvas>
+
+<script>
+var container;
+var camera, scene, renderer, loader, clock, light;
+var skinnedMesh, animation, mixer;
+
+init();
+animate();
+
+function init() {
+
+
+scene = new THREE.Scene();
+clock = new THREE.Clock;
+
+
+
+scene.background = new THREE.Color().set( 0xaec6cf );
+
+
+
+camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 0.1, 30000 );
+camera.position.set( 0, 0, 0 );
+
+renderer = new THREE.WebGLRenderer({canvas: document.getElementById('threejs'), antialias: true });
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap; // default THREE.PCFShadowMap
+
+//renderer.setClearColor(0x666666);
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+var light = new THREE.DirectionalLight( 0xffee44, 1, 100 );
+light.position.set( 12, 4, 8 ); 			//default; light shining from top
+light.castShadow = true;            // default false
+scene.add( light );
+
+var size = 100;
+var divisions = 10;
+
+var gridHelper = new THREE.GridHelper( size, divisions );
+scene.add( gridHelper );
+
+loader = new THREE.JSONLoader();
+	// loader.load( "models/simple.js", function( geometry ) {
+  //       meshvolume = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({
+	// 				color: 0xffcc00
+	//
+	//
+	//
+	// 			}) );
+	//
+	// 			scene.add( meshvolume );
+	// });
+
+
+	loader.load( 'models/elk6.json', function ( geometry, materials ) {
+
+		for ( var k in materials ) {
+
+			materials[ k ].skinning = true;
+
+		}
+
+		skinnedMesh = new THREE.SkinnedMesh( geometry, materials );
+		skinnedMesh.scale.set( 1, 1, 1 );
+skinnedMesh.castShadow = true; //default is false
+skinnedMesh.receiveShadow = false;
+
+		scene.add( skinnedMesh );
+
+		mixer = new THREE.AnimationMixer( skinnedMesh );
+		mixer.clipAction( skinnedMesh.geometry.animations[ 0 ] ).play();
+
+	} );
+
+	var floorgeometry = new THREE.PlaneGeometry(8, 12);
+	var floormaterial = new THREE.MeshLambertMaterial({
+
+		color: 0x005500,
+		side: THREE.DoubleSide
+	});
+	var floor = new THREE.Mesh(floorgeometry, floormaterial );
+	floor.receiveShadow = true;
+
+
+	scene.add(floor);
+	floor.rotation.x = 1.5708;
+
+
+	hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
+					hemiLight.color.setHSL( 0.6, 1, 0.6 );
+					hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+					hemiLight.position.set( 0, 50, 0 );
+					scene.add( hemiLight );
+
+	light2 = new THREE.AmbientLight(0xffffff, .4 );
+
+
+
+
+	  scene.add(light2);
+
+
+
+	
+
+}
+
+function animate() {
+	requestAnimationFrame( animate );
+
+if ( mixer ) mixer.update( clock.getDelta() );
+
+var t = ( Date.now() / 3000 );
+					// move light in circle around center
+					// change light height with sine curve
+					var r = 10.0;
+					var lx = r * Math.cos( t );
+					var lz = r * Math.sin( t );
+					var ly = 5.0 + 5.0 * Math.sin( t / 3.0 );
+					camera.position.set( lx, 2, lz );
+					camera.lookAt( 0,0,0 );
+
+render();
+
+
+}
+
+
+function render() {
+
+	renderer.render( scene, camera );
+
+}
+
+
+
+</script>
+</body>
+</html>
