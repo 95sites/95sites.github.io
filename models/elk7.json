@@ -47,7 +47,7 @@
         "transparent":false,
         "visible":true,
         "blending":1,
-        "colorDiffuse":[0.64,0.507121,0.0242713],
+        "colorDiffuse":[1,0.507121,0.0242713],
         "colorEmissive":[0,0,0],
         "shading":"lambert",
         "DbgName":"yellow"
