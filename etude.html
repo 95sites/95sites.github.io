@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+
+  <script language="javascript" type="text/javascript" src="js/p5.js"></script>
+
+
+  <style> body {padding: 0; margin: 0;} </style>
+  <script>
+  var y_offset = 0;
+var z_rot = 0;
+var color_switch = true;
+var painters = [];
+var ticks = 200;
+var z_rot_increase = 0.15;
+var y_offset_increase = 0.5;
+var ticks_threshold = 18;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  //for (var i = 0; i < 256; i++ ){
+  //  painters[i] = new Painter();
+  //}
+
+  colorMode(RGB, 1);
+  background(0,0,0);
+  //smooth();
+  noStroke();
+}
+function draw() {
+  if(ticks > ticks_threshold) {
+    var slot_found = false;
+    for(var j = 0; j < 256; j++) {
+    if(painters[j] == null && slot_found == false) {
+      painters[j] = new Painter();
+      var slot_found = true;
+      if(color_switch) {
+        painters[j].paint_color = 1;
+        color_switch = false;
+        }
+        else {
+          painters[j].paint_color = 0;
+          color_switch = true;
+        }
+      }
+    }
+    ticks = 0;
+  }
+  else {
+    ticks++;
+  }
+  for(var k = 0; k < painters.length; k++) { if(painters[k] != null) { painters[k].display(); if(painters[k].y_offset > 1200) {
+         painters[k] = null;
+      }
+    }
+  }
+}
+
+function Painter() {
+  this.z_rot = 0;
+  this.y_offset = 0;
+  this.paint_color = 0;
+  //Painter() {
+  //}
+  this.display = function() {
+    push();
+    translate(windowWidth/2, windowHeight/2);
+    rotate(this.z_rot);
+    this.z_rot += z_rot_increase;
+    fill(this.paint_color, this.paint_color, this.paint_color);
+    ellipse(0, this.y_offset, 50, 50);
+    this.y_offset += y_offset_increase;
+    pop();
+  }
+}
+</script>
+</head>
+
+<body>
+</body>
+</html>
