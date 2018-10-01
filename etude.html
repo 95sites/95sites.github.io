@@ -6,41 +6,66 @@
   <script language="javascript" type="text/javascript" src="js/p5.js"></script>
 
 
-  <style> body {padding: 0; margin: 0;} </style>
+<style>
+body{
+  font:17px/28px Arial;
+  padding: 0; margin: 0;
+  background:rgb(252,252,252);
+}
+#wrapper{
+  margin:50px auto;
+  width:800px;
+}
+#p5js_area{
+  width:800px; height: 400px;
+}
+canvas{
+  border-radius: 8px;
+}
+span.runscript{
+    cursor: pointer;
+}
+  </style>
   <script>
-  var y_offset = 0;
-var z_rot = 0;
-var color_switch = true;
-var painters = [];
-var ticks = 200;
-var z_rot_increase = 0.15;
-var y_offset_increase = 0.5;
-var ticks_threshold = 18;
+var started = false;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
+  var y_offset = 0;
+  var z_rot = 0;
+  var color_switch = true;
+  var painters = [];
+  var ticks = 200;
+  var z_rot_increase = 0.15;
+  var y_offset_increase = 0.5;
+  var ticks_threshold = 18;
+
+  function setup() {
+    var cnv = createCanvas(800, 400);
+    cnv.parent('p5js_area')
   //for (var i = 0; i < 256; i++ ){
   //  painters[i] = new Painter();
   //}
-
-  colorMode(RGB, 1);
-  background(0,0,0);
+noLoop();
+  colorMode(RGB, 255);
+  background(80,80,80);
   //smooth();
   noStroke();
-}
-function draw() {
-  if(ticks > ticks_threshold) {
-    var slot_found = false;
-    for(var j = 0; j < 256; j++) {
-    if(painters[j] == null && slot_found == false) {
-      painters[j] = new Painter();
-      var slot_found = true;
-      if(color_switch) {
-        painters[j].paint_color = 1;
-        color_switch = false;
+  }
+  function draw() {
+
+if(started){
+
+    if(ticks > ticks_threshold) {
+      var slot_found = false;
+      for(var j = 0; j < 256; j++) {
+        if(painters[j] == null && slot_found == false) {
+          painters[j] = new Painter();
+          var slot_found = true;
+        if(color_switch) {
+          painters[j].paint_color = 240;
+          color_switch = false;
         }
         else {
-          painters[j].paint_color = 0;
+          painters[j].paint_color = 80;
           color_switch = true;
         }
       }
@@ -56,7 +81,7 @@ function draw() {
     }
   }
 }
-
+}
 function Painter() {
   this.z_rot = 0;
   this.y_offset = 0;
@@ -65,7 +90,7 @@ function Painter() {
   //}
   this.display = function() {
     push();
-    translate(windowWidth/2, windowHeight/2);
+    translate(400, 200);
     rotate(this.z_rot);
     this.z_rot += z_rot_increase;
     fill(this.paint_color, this.paint_color, this.paint_color);
@@ -74,9 +99,36 @@ function Painter() {
     pop();
   }
 }
+
+function start(){
+  started = true;
+  loop();
+
+}
+
 </script>
 </head>
 
 <body>
+  <div id="wrapper">
+    <p>.....<br />
+      Performance<br />
+An opening ceremony of The Temple of Everlasting Life was held in Humlab of Umeå University on April 28th at 5pm. The ceremonial space contained prayers, a possibility to visit the temple, and the Office, where a statement of belief was presented. By agreeing to the statement, you could also take part in the communion.
+</p><p>
+The Temple is open forever in the virtual world Second Life. It is accessible through an avatar. If you don’t have an avatar in Second life yet, you can download the program from the same page. Second Life will instruct you on creating an avatar. You will find the The Temple of Everlasting Life on the top of the mountain.
+</p>
+  <div id="p5js_area"></div>
+  <span class="runscript" onclick="start()">Run Script</span>
+  <p>
+    Statement of Belief<br />
+    0<br />
+    You have predetermined qualities and defects.
+    You have a limited time of +- 100 years. Your time expires in a steady, monorhythmical pace.
+    You are constrained in a limited space of approx. 0,4 m3, which is portable at a relatively slow speed.
+    You need a regular amount of nutrition and lubrication and a waste system.
+    You are mostly dominated by impulses related to reproduction<br />
+    .....
+  </p>
+</div>
 </body>
 </html>
